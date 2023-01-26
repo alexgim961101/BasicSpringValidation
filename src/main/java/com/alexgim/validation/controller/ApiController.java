@@ -5,16 +5,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
 public class ApiController {
+    // validation
 
     @PostMapping("/user")
     public ResponseEntity user(@Valid @RequestBody User user, BindingResult bindingResult) {
@@ -35,5 +34,29 @@ public class ApiController {
         }
         System.out.println(user);
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    // exception
+    @GetMapping
+    public com.alexgim.validation.exception.dto.User get(@RequestParam(required = false) String name, @RequestParam(required = false) Integer age) {
+        com.alexgim.validation.exception.dto.User user = new com.alexgim.validation.exception.dto.User();
+        user.setName(name);
+        user.setAge(age);
+
+        int a = 10 + age;  // nullPointerException을 터트리기 위한 장치
+
+        return user;
+    }
+
+    @PostMapping
+    public com.alexgim.validation.exception.dto.User post(@Valid @RequestBody com.alexgim.validation.exception.dto.User user) {
+        System.out.println(user.toString());
+        return user;
+    }
+
+    // 해당 컨트롤러의 예외만 처리해줌 (우선순위가 높음)
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
