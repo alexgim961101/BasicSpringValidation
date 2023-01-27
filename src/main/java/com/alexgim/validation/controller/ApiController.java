@@ -5,13 +5,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/api")
+@Validated          // 파라미터 validation 가능하게 해줌
 public class ApiController {
     // validation
 
@@ -38,7 +43,7 @@ public class ApiController {
 
     // exception
     @GetMapping
-    public com.alexgim.validation.exception.dto.User get(@RequestParam(required = false) String name, @RequestParam(required = false) Integer age) {
+    public com.alexgim.validation.exception.dto.User get(@Size(min = 2) @RequestParam(required = false) String name, @NotNull @Min(1) @RequestParam(required = false) Integer age) {
         com.alexgim.validation.exception.dto.User user = new com.alexgim.validation.exception.dto.User();
         user.setName(name);
         user.setAge(age);
